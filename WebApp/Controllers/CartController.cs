@@ -1,18 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using WebApp.ViewModels;
-using WebAPI.Models;
 
 namespace WebApp.Controllers
 {
     public class CartController : Controller
     {
 
-        private readonly AppDbContext _context;
-
-        public CartController(AppDbContext context)
+        public CartController()
         {
-            _context = context;
+            
         }
         public IActionResult Index()
         {

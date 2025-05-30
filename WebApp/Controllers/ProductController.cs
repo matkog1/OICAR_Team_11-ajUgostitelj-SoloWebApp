@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WebAPI.DTOs;
+using WebApp.DTOs;
 using WebApp.ApiClients;
 using WebApp.ViewModels;
-using WebAPI.Models;
 using System.Text.Json;
 
 
@@ -11,7 +10,6 @@ namespace WebApp.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly AppDbContext _context;
         private readonly ProductApiClient _productApiClient;
         private readonly CategoriesApiClient _categoriesApiClient;
         private readonly ReviewApiClient _reviewApiClient;

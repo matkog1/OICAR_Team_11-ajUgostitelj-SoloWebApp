@@ -1,8 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using System.Net.Http.Headers;
-using WebAPI.Models;
-using WebAPI.Repository;
-using WebAPI.Services;
+ using System.Net.Http.Headers;
 using WebApp.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("connStr")));
 
 builder.Services.AddHttpClient<ProductApiClient>(client =>
 {

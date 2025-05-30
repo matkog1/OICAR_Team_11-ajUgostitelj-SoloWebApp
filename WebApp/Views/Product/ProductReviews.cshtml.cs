@@ -1,34 +1,31 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using WebAPI.Models;
+using WebApp.ApiClients;
+using WebApp.DTOs;
 
 namespace WebApp.Pages.Product
 {
     public class ReviewModel : PageModel
     {
-        private readonly AppDbContext _context;
+        private readonly ProductApiClient _productApiClient;
+        private readonly ReviewApiClient _reviewApiClient;
 
-        public ReviewModel(AppDbContext context)
+        public ReviewModel(ProductApiClient productApiClient, ReviewApiClient reviewApiClient)
         {
-            _context = context;
+            _productApiClient = productApiClient;
+            _reviewApiClient = reviewApiClient;
         }
 
         [BindProperty]
-        public Review NewReview { get; set; } = new();
+        public ReviewDTO NewReview { get; set; } = new();
 
-        public List<Review> Reviews { get; set; } = new();
-        public List<WebAPI.Models.Product> Products { get; set; } = new();
+        public List<ReviewDTO> Reviews { get; set; } = new();
+        public List<WebApp.DTOs.ProductDto> Products { get; set; } = new();
 
         public async Task OnGetAsync()
         {
-            Reviews = await _context.Reviews
-                .Include(r => r.Product)
-                .OrderByDescending(r => r.ReviewDate)
-                .ToListAsync();
-
-            Products = await _context.Products.ToListAsync();
+            await LoadDataAsync();
         }
         public async Task<IActionResult> OnPostAsync()
         {
@@ -38,10 +35,7 @@ namespace WebApp.Pages.Product
                 return Page();
             }
 
-            // Dohvati odabrani proizvod
-            var selectedProduct = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == NewReview.ProductId);
-
+            var selectedProduct = await _productApiClient.LoadProductAsync(NewReview.ProductId);
             if (selectedProduct == null)
             {
                 ModelState.AddModelError("", "Selected product not found");
@@ -49,24 +43,18 @@ namespace WebApp.Pages.Product
                 return Page();
             }
 
-            // Postavi ProductName automatski
             NewReview.ProductName = selectedProduct.Name;
             NewReview.ReviewDate = DateTime.UtcNow;
 
-            _context.Reviews.Add(NewReview);
-            await _context.SaveChangesAsync();
+            await _reviewApiClient.CreateReviewAsync(NewReview);
 
-            return RedirectToPage();
+            return RedirectToPage(); 
         }
 
         private async Task LoadDataAsync()
         {
-            Reviews = await _context.Reviews
-                .Include(r => r.Product)
-                .OrderByDescending(r => r.ReviewDate)
-                .ToListAsync();
-
-            Products = await _context.Products.ToListAsync();
+            Products = await _productApiClient.LoadProductsAsync();
+            Reviews = await _reviewApiClient.LoadReviewsAsync();
         }
     }
 }

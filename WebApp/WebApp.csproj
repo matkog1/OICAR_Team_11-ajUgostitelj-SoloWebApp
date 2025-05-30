@@ -6,11 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
 	<AssemblyName>WebAppFrontend</AssemblyName>
 	<OutputPath>bin/Release/net8.0/out</OutputPath>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
@@ -22,7 +19,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.3" />
-	 <ProjectReference Include="..\WebAPI\WebAPI.csproj" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
   <ItemGroup>

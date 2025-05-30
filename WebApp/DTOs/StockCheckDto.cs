@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using WebAPI.Models;
 
 namespace WebApp.DTOs
 {
