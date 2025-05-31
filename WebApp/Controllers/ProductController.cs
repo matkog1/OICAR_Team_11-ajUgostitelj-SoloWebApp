@@ -15,6 +15,8 @@ namespace WebApp.Controllers
         private readonly CategoriesApiClient _categoriesApiClient;
         private readonly ReviewApiClient _reviewApiClient;
         private readonly ILogger<CategoriesController> _logger;
+        private const string CART_SESSION_KEY = "Cart";
+
 
         public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, ReviewApiClient reviewApiClient, ILogger<CategoriesController> logger)
         {
@@ -136,9 +138,7 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult AddToCart(ProductCartViewModel model)
         {
-            var cart = TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!)!
-                : new List<ProductCartViewModel>();
+            var cart = GetCartFromSession();
 
             var existing = cart.FirstOrDefault(x => x.Id == model.Id);
             if (existing != null)
@@ -146,8 +146,7 @@ namespace WebApp.Controllers
             else
                 cart.Add(model);
 
-            TempData["Cart"] = JsonSerializer.Serialize(cart);
-            TempData.Keep("Cart");
+            SaveCartToSession(cart);
 
             return RedirectToAction("Index", "Cart");
         }
@@ -210,7 +209,7 @@ namespace WebApp.Controllers
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError(ex, "Failed to get post product  reviews");
+                _logger.LogError(ex, "Failed to post product reviews");
                 return View("Error", "Unable to connect to the API.");
             }
             catch (Exception ex)
@@ -218,6 +217,20 @@ namespace WebApp.Controllers
                 _logger.LogError(ex, "Unexpected error in Product controller post ProductReviews method");
                 return View("Error", "An unexpected error occurred.");
             }
+        }
+
+        private List<ProductCartViewModel> GetCartFromSession()
+        {
+            var json = HttpContext.Session.GetString(CART_SESSION_KEY);
+            return !string.IsNullOrEmpty(json)
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(json) ?? new()
+                : new();
+        }
+
+        private void SaveCartToSession(List<ProductCartViewModel> cart)
+        {
+            var json = JsonSerializer.Serialize(cart);
+            HttpContext.Session.SetString(CART_SESSION_KEY, json);
         }
     }
 }

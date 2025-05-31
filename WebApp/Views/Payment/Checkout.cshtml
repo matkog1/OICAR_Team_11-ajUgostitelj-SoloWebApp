@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "Confirm Payment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -11,10 +11,10 @@
     <form method="post" asp-controller="Payment" asp-action="Process" class="checkout-form" style="max-width:600px;margin:auto;">
         <div style="margin-bottom:20px;">
             <label for="paymentMethod" style="font-weight:bold;color:var(--primary-color);">Payment Method</label>
-        <select name="method" id="paymentMethod">
-            <option value="Cash">Cash</option>
-            <option value="Card">Card</option>
-        </select>
+            <select name="method" id="paymentMethod">
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+            </select>
         </div>
 
         <div id="cardFields" style="display:none;">
@@ -42,7 +42,7 @@
 
         <a href="/Payment/Process">Pay now!</a>
         </br>
-        <a href="@Url.Action("Index", "Cart")" class="continue-shopping" >Back to Cart</a>
+        <a href="@Url.Action("Index", "Cart")" class="continue-shopping">Back to Cart</a>
     </form>
 </div>
 
