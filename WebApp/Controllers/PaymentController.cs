@@ -11,6 +11,7 @@ namespace WebApp.Controllers
         private readonly PaymentApiClient _paymentApiClient;
         private readonly OrderApiClient _orderApiClient;
         private readonly ILogger<CategoriesController> _logger;
+        private const string CART_SESSION_KEY = "Cart";
 
         public PaymentController(PaymentApiClient paymentApiClient, OrderApiClient orderApiClient, ILogger<CategoriesController> logger)
         {
@@ -22,7 +23,7 @@ namespace WebApp.Controllers
         [HttpGet, HttpPost]
         public IActionResult Checkout()
         {
-            var cart = GetCartFromTempData();
+            var cart = GetCartFromSession();
             TempData.Keep("Cart");
             return View(cart);
         }
@@ -32,7 +33,7 @@ namespace WebApp.Controllers
         {
             try
             {
-                var cart = GetCartFromTempData();
+                var cart = GetCartFromSession();
                 if (!cart.Any())
                 {
                     TempData["Error"] = "Your cart is empty.";
@@ -98,10 +99,11 @@ namespace WebApp.Controllers
             ViewBag.TableNumber = table;
             return View("Success");
         }
-        private List<ProductCartViewModel> GetCartFromTempData()
+        private List<ProductCartViewModel> GetCartFromSession()
         {
-            return TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!) ?? new()
+            var json = HttpContext.Session.GetString(CART_SESSION_KEY);
+            return !string.IsNullOrEmpty(json)
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(json) ?? new()
                 : new();
         }
     }
