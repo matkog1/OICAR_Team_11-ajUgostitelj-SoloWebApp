@@ -10,11 +10,13 @@ namespace WebApp.Controllers
     {
         private readonly PaymentApiClient _paymentApiClient;
         private readonly OrderApiClient _orderApiClient;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public PaymentController(PaymentApiClient paymentApiClient, OrderApiClient orderApiClient)
+        public PaymentController(PaymentApiClient paymentApiClient, OrderApiClient orderApiClient, ILogger<CategoriesController> logger)
         {
             _paymentApiClient = paymentApiClient;
             _orderApiClient = orderApiClient;
+            _logger = logger;
         }
 
         [HttpGet, HttpPost]
@@ -28,48 +30,65 @@ namespace WebApp.Controllers
         [HttpGet, HttpPost]
         public async Task<IActionResult> Process([FromForm] string method)
         {
-            var cart = GetCartFromTempData();
-
-            if (!cart.Any())
-                return RedirectToAction("Index", "Cart");
-
-            var orderDto = new OrderDto
+            try
             {
-                OrderDate = DateTime.UtcNow,
-                TableId = 2,
-                Status = "Paid",
-                TotalAmount = cart.Sum(x => x.Price * x.Quantity)
-            };
+                var cart = GetCartFromTempData();
+                if (!cart.Any())
+                {
+                    TempData["Error"] = "Your cart is empty.";
+                    return RedirectToAction("Index", "Cart");
+                }
 
-            var createdOrder = await _orderApiClient.CreateOrder(orderDto);
-            if (createdOrder == null) return View("Checkout"); 
+                var orderDto = new OrderDto
+                {
+                    OrderDate = DateTime.UtcNow,
+                    TableId = 2,
+                    Status = "Paid",
+                    TotalAmount = cart.Sum(x => x.Price * x.Quantity)
+                };
 
-            // kreiranje itemsa narudzbe
-            var listOfitemDtos = cart.Select(c => new OrderItemDto
+                var createdOrder = await _orderApiClient.CreateOrder(orderDto);
+                if (createdOrder == null)
+                {
+                    _logger.LogWarning("Failed to create order");
+                    return View("Checkout");
+                }
+
+                var orderItems = cart.Select(c => new OrderItemDto
+                {
+                    OrderId = createdOrder.Id,
+                    ProductId = c.Id,
+                    ProductName = c.Name,
+                    UnitPrice = c.Price,
+                    Quantity = c.Quantity
+                }).ToList();
+
+                var added = await _orderApiClient.AddOrderItemsToOrder(orderItems);
+
+                var paymentDto = new PaymentDto
+                {
+                    Amount = createdOrder.TotalAmount,
+                    Method = "cash",
+                    PaymentDate = DateTime.UtcNow,
+                    OrderId = createdOrder.Id
+                };
+
+                var payment = await _paymentApiClient.CreatePaymentAsync(paymentDto);
+                HttpContext.Session.SetInt32("LastOrderId", createdOrder.Id);
+
+                return RedirectToAction("Success", new { id = createdOrder.Id, orderStatus = createdOrder.Status, table = orderDto.TableId });
+            }
+            catch (HttpRequestException ex)
             {
-                OrderId = createdOrder!.Id,
-                ProductId = c.Id,
-                ProductName = c.Name,
-                UnitPrice = c.Price,
-                Quantity = c.Quantity
-            }).ToList();
-
-            var itemsAddedToOrder = await _orderApiClient.AddOrderItemsToOrder(listOfitemDtos);
-
-            var paymentDto = new PaymentDto
+                _logger.LogError(ex, "API communication fail during payment.");
+                TempData["Error"] = "There was a problem processing your payment.";
+                return View("Checkout");
+            }
+            catch (Exception ex)
             {
-                Amount = createdOrder.TotalAmount,
-                Method = "CreditCard",
-                PaymentDate = DateTime.UtcNow,
-                OrderId = createdOrder.Id
-            };
-            
-            var paymentResponse = await _paymentApiClient.CreatePaymentAsync(paymentDto);
-
-            // ovo nam treba za cuvanje ID za tracking, ne brisati
-            HttpContext.Session.SetInt32("LastOrderId", createdOrder.Id);
-
-            return RedirectToAction("Success", new { id = createdOrder.Id, orderStatus = createdOrder.Status, table = orderDto.TableId });
+                _logger.LogError(ex, "Unexpected error in PaymentController.Process.");
+                return View("Error", "An unexpected error occurred.");
+            }
         }
 
         public IActionResult Success(int id, string orderStatus, int table)
