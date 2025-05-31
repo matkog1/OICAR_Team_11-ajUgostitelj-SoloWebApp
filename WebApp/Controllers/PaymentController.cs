@@ -28,7 +28,7 @@ namespace WebApp.Controllers
         }
 
         [HttpGet, HttpPost]
-        public async Task<IActionResult> Process([FromForm] string method)
+        public async Task<IActionResult> Process([FromForm] PaymentFormViewModel viewmodel)
         {
             try
             {

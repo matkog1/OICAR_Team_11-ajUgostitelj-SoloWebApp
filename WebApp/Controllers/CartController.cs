@@ -6,40 +6,38 @@ namespace WebApp.Controllers
 {
     public class CartController : Controller
     {
-
+        private const string CART_SESSION_KEY = "Cart";
         public CartController()
         {
             
         }
+        [HttpGet]
         public IActionResult Index()
         {
-            var cart = GetCartFromTempData();
-            TempData.Keep("Cart");
+            var cart = GetCartFromSession();
             return View(cart);
         }
 
         [HttpPost]
         public IActionResult Remove(int id)
         {
-            var cart = TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!)!
-                : new List<ProductCartViewModel>();
+            var cart = GetCartFromSession();
 
             cart = cart.Where(x => x.Id != id).ToList();
 
-            TempData["Cart"] = JsonSerializer.Serialize(cart);
-            TempData.Keep("Cart");
+            SaveCartToSession(cart);
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> CheckoutFromClient([FromBody] List<ProductCartViewModel> items)
+        public async Task<IActionResult> Checkout([FromBody] List<ProductCartViewModel> items)
         {
             if (items == null || !items.Any())
                 return BadRequest("Cart is empty.");
 
-            TempData["Cart"] = JsonSerializer.Serialize(items);
+            SaveCartToSession(items);
+
             return Json(new { redirectUrl = Url.Action("Checkout", "Payment") });
         }
 
@@ -49,11 +47,19 @@ namespace WebApp.Controllers
             ViewBag.OrderId = id;
             return View();
         }
-        private List<ProductCartViewModel> GetCartFromTempData()
+
+        private List<ProductCartViewModel> GetCartFromSession()
         {
-            return TempData.ContainsKey("Cart")
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(TempData["Cart"]!.ToString()!) ?? new()
+            var json = HttpContext.Session.GetString(CART_SESSION_KEY);
+            return !string.IsNullOrEmpty(json)
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(json) ?? new()
                 : new();
+        }
+
+        private void SaveCartToSession(List<ProductCartViewModel> cart)
+        {
+            var json = JsonSerializer.Serialize(cart);
+            HttpContext.Session.SetString(CART_SESSION_KEY, json);
         }
 
     }

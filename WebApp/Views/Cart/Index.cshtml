@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Your Shopping Cart";
 }
+
 <style>
     :root {
         --primary-color: #6F4E37;
@@ -73,9 +74,9 @@
         font-weight: bold;
     }
 
-    .remove-btn:hover {
-        color: #e63946;
-    }
+        .remove-btn:hover {
+            color: #e63946;
+        }
 
     .cart-summary {
         margin-top: 30px;
@@ -104,9 +105,9 @@
         transition: background-color 0.3s;
     }
 
-    .checkout-btn:hover {
-        background-color: var(--dark-coffee);
-    }
+        .checkout-btn:hover {
+            background-color: var(--dark-coffee);
+        }
 
     .continue-shopping {
         display: inline-block;
@@ -116,10 +117,10 @@
         font-weight: bold;
     }
 
-    .continue-shopping:hover {
-        text-decoration: underline;
-        color: var(--dark-coffee);
-    }
+        .continue-shopping:hover {
+            text-decoration: underline;
+            color: var(--dark-coffee);
+        }
 
     @@media (max-width: 768px) {
         .cart-item {
@@ -141,7 +142,9 @@
             margin-top: 10px;
         }
     }
-</style><div class="container-cart">
+</style>
+
+<div class="container-cart">
     <h1 class="cart-title">Your Shopping Cart</h1>
     <div class="cart-items">
         @if (!Model.Any())
@@ -165,7 +168,7 @@
                             <div class="item-subtotal">Cijena: @subtotal.ToString("F2") €</div>
                         </div>
                     </div>
-                    <form asp-action="Remove" asp-controller="Cart" method="post">
+                    <form action="/Cart/Remove" method="post">
                         <input type="hidden" name="id" value="@item.Id" />
                         <button type="submit" class="remove-btn">&times;</button>
                     </form>
@@ -173,83 +176,11 @@
             }
             <div class="cart-summary">
                 <div class="total-price">Total: @total.ToString("F2") €</div>
-                <form asp-action="CheckoutFromClient" asp-controller="Cart" method="post">
-                    <button type="button" class="checkout-btn" id="checkout">Proceed to Checkout</button>
+                <form action="/Payment/Checkout" method="get">
+                    <button type="submit" class="checkout-btn">Proceed to Checkout</button>
                 </form>
                 <a href="@Url.Action("Index", "Product")" class="continue-shopping">Continue Shopping</a>
             </div>
-        } 
+        }
     </div>
 </div>
-    <script>
-        console.log("Scripts section loaded.");
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("DOM ready");
-
-            const checkoutBtn = document.getElementById("checkout");
-            if (!checkoutBtn) {
-                console.error("Checkout button not found.");
-                return;
-            }
-
-            checkoutBtn.addEventListener("click", async () => {
-                console.log("Checkout clicked");
-
-                const cartRaw = localStorage.getItem("cart");
-                if (!cartRaw) {
-                    alert("Cart is empty.");
-                    return;
-                }
-
-                const cart = JSON.parse(cartRaw);
-                if (!cart.length) {
-                    alert("Cart is empty.");
-                    return;
-                }
-
-                try {
-                    const response = await fetch("/Cart/CheckoutFromClient", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(cart)
-                    });
-
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        throw new Error(errorText);
-                    }
-
-                    const result = await response.json();
-                    localStorage.removeItem("cart");
-                window.location.href = result.redirectUrl;
-                } catch (err) {
-                    console.error("Error:", err);
-                    alert("Order creation failed: " + err.message);
-                }
-            });
-        });
-    document.querySelectorAll(".remove-btn").forEach(btn => {
-    btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const id = parseInt(btn.previousElementSibling.value); 
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-        cart = cart.filter(item => item.id !== id);
-        localStorage.setItem("cart", JSON.stringify(cart));
-        btn.closest(".cart-item").remove();
-
-        const cartItems = document.querySelectorAll(".cart-item");
-        if (cartItems.length === 0) {
-            document.querySelector(".cart-items").innerHTML = "<p>Your cart is empty.</p>";
-        } else {
-            let newTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-            document.querySelector(".total-price").textContent = `Total: ${newTotal.toFixed(2)} €`;
-        }
-    });
-});
-    const tempCart = @Html.Raw(Json.Serialize(Model));
-    localStorage.setItem("cart", JSON.stringify(tempCart));
-    </script>
-
-
