@@ -149,7 +149,42 @@ body {
         display: block;
         text-align: center;
     }
-}
+
+       
+    }
+
+    .qty-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+    }
+
+    .qty-btn {
+        background-color: var(--secondary);
+        border: none;
+        color: var(--light);
+        font-size: 1.2rem;
+        font-weight: bold;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .qty-btn:hover {
+            background-color: var(--primary);
+        }
+
+    .qty-input {
+        width: 50px;
+        padding: 6px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
 
 </style>
 
@@ -172,8 +207,15 @@ body {
                     <div class="item-info">
                         <div>
                             <div class="item-name">@item.Name</div>
-                            <div class="item-price">@item.Price.ToString("F2") €</div>
-                            <div class="item-qty">Količina: @item.Quantity</div>
+                            <div class="item-price-wrapper">
+                                <span class="item-price" data-price="@item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                                </span> 
+                            </div>
+                            <div class="qty-control">
+                                <button type="button" class="qty-btn" onclick="updateQty(this, -1)">–</button>
+                                <input type="number" class="qty-input" value="@item.Quantity" min="1" onchange="manualQtyChange(this)" />
+                                <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                            </div>
                             <div class="item-subtotal">Cijena: @subtotal.ToString("F2") €</div>
                         </div>
                     </div>
@@ -193,3 +235,75 @@ body {
         }
     </div>
 </div>
+@section Scripts {
+    <script>
+        function updateQty(btn, delta) {
+            const wrapper = btn.closest(".cart-item");
+            if (!wrapper) return;
+            const input = wrapper.querySelector(".qty-input");
+            if (!input) return;
+            let qty = parseInt(input.value);
+            if (isNaN(qty)) qty = 1;
+            qty += delta;
+            if (qty < 1) qty = 1;
+            input.value = qty;
+            recalc(wrapper);
+        }
+
+        function manualQtyChange(input) {
+            const wrapper = input.closest(".cart-item");
+            if (!wrapper) return;
+            let qty = parseInt(input.value);
+            if (isNaN(qty) || qty < 1) qty = 1;
+            input.value = qty;
+            recalc(wrapper);
+        }
+
+        function recalc(itemRow) {
+            try {
+                if (!itemRow) {
+                    console.error("itemRow is null. Check your DOM structure or selector.");
+                    return;
+                }
+                const priceElement = itemRow.querySelector(".item-price");
+                const subtotalElement = itemRow.querySelector(".subtotal");
+                const qtyInput = itemRow.querySelector(".qty-input");
+
+                if (!priceElement || !subtotalElement || !qtyInput) {
+                    console.error("Missing elements for recalculation.");
+                    return;
+                }
+
+                const priceText = priceElement.dataset.price;
+                const price = parseFloat(priceText.replace(',', '.'));
+                const qty = parseInt(qtyInput.value);
+
+                if (!isNaN(price) && !isNaN(qty)) {
+                    const subtotal = price * qty;
+                    subtotalElement.textContent = subtotal.toFixed(2);
+                }
+
+                let total = 0;
+                document.querySelectorAll(".cart-item").forEach(item => {
+                    const priceEl = item.querySelector(".item-price");
+                    const inputEl = item.querySelector(".qty-input");
+                    if (!priceEl || !inputEl) return;
+                    const price = parseFloat(priceEl.dataset.price.replace(',', '.'));
+                    const qty = parseInt(inputEl.value);
+                    if (!isNaN(price) && !isNaN(qty)) {
+                        total += price * qty;
+                    }
+                });
+
+                const totalEl = document.getElementById("total-price");
+                if (totalEl) {
+                    totalEl.textContent = total.toFixed(2);
+                } else {
+                    console.error("Total element not found.");
+                }
+            } catch (err) {
+                console.error("recalc error:", err);
+            }
+        }
+    </script>
+}
