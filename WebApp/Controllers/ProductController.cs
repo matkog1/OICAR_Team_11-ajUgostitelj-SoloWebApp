@@ -88,6 +88,8 @@ namespace WebApp.Controllers
                 if (product == null)
                     return NotFound();
 
+                var reviews = await _reviewApiClient.LoadReviewsByProductId(id);
+
                 var vm = new DetailsViewModel
                 {
                     Id = product.Id,
@@ -95,8 +97,9 @@ namespace WebApp.Controllers
                     Description = product.Description,
                     Price = product.Price,
                     CategoryName = category?.Name ?? "Nema kategoriju",
-                    AverageRating = product.AverageRating,
-                    Reviews = await _reviewApiClient.LoadReviewsByProductId(product.Id),
+                    Reviews = reviews,
+                    AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : null,
+                    LastReviewDate = reviews.Any() ? reviews.Max(r => r.ReviewDate) : null
                 };
 
                 return View(vm);

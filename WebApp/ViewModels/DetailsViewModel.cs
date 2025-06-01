@@ -24,6 +24,7 @@ namespace WebApp.ViewModels
 
         public string? ImageUrl { get; set; }
         public double? AverageRating { get; set; }
+        public DateTime? LastReviewDate { get; set; }
         public List<ReviewDTO> Reviews { get; set; } = new();
     }
 }
