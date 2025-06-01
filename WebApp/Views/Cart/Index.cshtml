@@ -212,9 +212,9 @@ body {
                                 </span> 
                             </div>
                             <div class="qty-control">
-                                <button type="button" class="qty-btn" onclick="updateQty(this, -1)">–</button>
+                                <button type="button" class="qty-btn">–</button> @*onclick="updateQty(this, -1)" treba obo popraviti*@
                                 <input type="number" class="qty-input" value="@item.Quantity" min="1" onchange="manualQtyChange(this)" />
-                                <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                                <button type="button" class="qty-btn">+</button>@*onclick="updateQty(this, 1)" treba ovo popraviti*@
                             </div>
                             <div class="item-subtotal">Cijena: @subtotal.ToString("F2") €</div>
                         </div>
