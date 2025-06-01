@@ -88,14 +88,15 @@ namespace WebApp.Controllers
                 if (product == null)
                     return NotFound();
 
-                var vm = new ProductViewModel
+                var vm = new DetailsViewModel
                 {
                     Id = product.Id,
                     Name = product.Name,
                     Description = product.Description,
                     Price = product.Price,
                     CategoryName = category?.Name ?? "Nema kategoriju",
-                    AverageRating = product.AverageRating
+                    AverageRating = product.AverageRating,
+                    Reviews = await _reviewApiClient.LoadReviewsByProductId(product.Id),
                 };
 
                 return View(vm);

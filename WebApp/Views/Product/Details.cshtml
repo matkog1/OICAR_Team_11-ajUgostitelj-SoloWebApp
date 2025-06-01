@@ -1,4 +1,4 @@
-﻿@model WebApp.ViewModels.ProductViewModel
+﻿@model WebApp.ViewModels.DetailsViewModel
 
 @{
     ViewData["Title"] = "Detalji Proizvoda";
@@ -318,7 +318,26 @@
         <p>@Model.Description</p>
         <div class="product-price" id="total-price">@Model.Price.ToString("F2") €</div>
         <div class="product-rating">
-            @(Model.AverageRating.HasValue ? $"Rating: {Model.AverageRating:F1} ★" : "Not rated yet")
+            @if (Model.Reviews.Any())
+            {
+                <div class="product-reviews">
+                    <h3>Recenzije</h3>
+                    @foreach (var review in Model.Reviews)
+                    {
+                        <div class="review-item">
+                            <strong>@review.ReviewerName</strong>
+                            <span>(@review.ReviewDate.ToString("dd.MM.yyyy"))</span><br />
+                            <span>Ocjena: @review.Rating ★</span>
+                            <p>@review.Comment</p>
+                            <hr />
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p><em>Ovaj proizvod još nema recenzija.</em></p>
+            }
         </div>
         <form asp-action="AddToCart" asp-controller="Product" method="post">
             <input type="hidden" name="Id" value="@Model.Id" />
