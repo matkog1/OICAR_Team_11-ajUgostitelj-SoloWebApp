@@ -1,4 +1,4 @@
-﻿@model WebApp.ViewModels.ProductViewModel
+﻿@model WebApp.ViewModels.DetailsViewModel
 
 @{
     ViewData["Title"] = "Detalji Proizvoda";
@@ -307,6 +307,28 @@
         align-items: flex-start;
     }
 }
+
+    .star-rating {
+        display: inline-flex;
+        font-size: 1.4rem;
+        line-height: 1;
+        color: #FFD700; /* zlatna */
+        margin-bottom: 0.5rem;
+    }
+
+        .star-rating .star {
+            position: relative;
+            display: inline-block;
+            color: #ddd;
+        }
+
+            .star-rating .star::before {
+                content: "★★★★★";
+                letter-spacing: 2px;
+                background: linear-gradient(90deg, #FFD700 calc(var(--rating) * 20%), #ddd calc(var(--rating) * 20%));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
 </style>
 
 <div class="product-detail-container">
@@ -318,7 +340,22 @@
         <p>@Model.Description</p>
         <div class="product-price" id="total-price">@Model.Price.ToString("F2") €</div>
         <div class="product-rating">
-            @(Model.AverageRating.HasValue ? $"Rating: {Model.AverageRating:F1} ★" : "Not rated yet")
+           <div class="product-rating">
+                @if (Model.AverageRating.HasValue)
+                {
+                    <div class="star-rating" style="--rating: @Model.AverageRating.Value.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)">
+                        <span class="star"></span>
+                    </div>
+                    <div class="rating-text">
+                        <strong>@Model.AverageRating.Value.ToString("0.0")</strong>/5
+                    </div>
+                }
+
+                @if (Model.LastReviewDate.HasValue)
+                {
+                     <span><strong>Zadnja recenzija:</strong> @Model.LastReviewDate.Value.ToString("dd.MM.yyyy")</span>
+                }
+    </div>
         </div>
         <form asp-action="AddToCart" asp-controller="Product" method="post">
             <input type="hidden" name="Id" value="@Model.Id" />
