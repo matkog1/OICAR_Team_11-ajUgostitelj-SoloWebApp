@@ -65,11 +65,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Middleware pipeline
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-}
+
 app.UseCors("AllowAll");
 app.UseCors("AllowLocalhost");
 app.UseStaticFiles();
