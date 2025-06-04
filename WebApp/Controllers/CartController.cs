@@ -23,9 +23,9 @@ namespace WebApp.Controllers
         {
             var cart = GetCartFromSession();
 
-            cart = cart.Where(x => x.Id != id).ToList();
+            var updatedCart = cart.Where(x => x.Id != id).ToList();
 
-            SaveCartToSession(cart);
+            SaveCartToSession(updatedCart);
 
             return RedirectToAction("Index");
         }
@@ -52,8 +52,8 @@ namespace WebApp.Controllers
         {
             var json = HttpContext.Session.GetString(CART_SESSION_KEY);
             return !string.IsNullOrEmpty(json)
-                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(json) ?? new()
-                : new();
+                ? JsonSerializer.Deserialize<List<ProductCartViewModel>>(json) ?? new List<ProductCartViewModel>()
+                : new List<ProductCartViewModel>();
         }
 
         private void SaveCartToSession(List<ProductCartViewModel> cart)
