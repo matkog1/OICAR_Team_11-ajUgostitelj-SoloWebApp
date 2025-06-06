@@ -114,6 +114,15 @@ body {
         color: #E5C3A6 !important;
         text-decoration: underline;
     }
+.footer-links a {
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+    .footer-links a:hover {
+        color: var(--accent-color);
+        text-decoration: underline;
+    }
 
 @media (max-width: 767.98px) {
     .navbar-collapse {
