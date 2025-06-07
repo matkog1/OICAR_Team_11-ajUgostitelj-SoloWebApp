@@ -63,14 +63,25 @@ namespace WebApp.ApiClients
             try
             {
                 var resp = await _http.PutAsJsonAsync($"product/{updatedProduct.Id}", updatedProduct);
-                if (resp.StatusCode == HttpStatusCode.NotFound) return false;
+
+                if (resp.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    _logger.LogWarning("Validation failed when updating product.");
+                    return false;
+                }
+
+                if (resp.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return false;
+                }
+
                 resp.EnsureSuccessStatusCode();
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to update product via API.");
-                throw;
+                return false;
             }
         }
 
@@ -79,14 +90,20 @@ namespace WebApp.ApiClients
             try
             {
                 var resp = await _http.DeleteAsync($"product/{id}");
-                if (resp.StatusCode == HttpStatusCode.NotFound) return false;
+
+                if (resp.StatusCode == HttpStatusCode.NotFound)
+                {
+                    _logger.LogWarning($"Product with ID {id} not found.");
+                    return false;
+                }
+
                 resp.EnsureSuccessStatusCode();
                 return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to delete product via API.");
-                throw;
+                return false;
             }
         }
     }
