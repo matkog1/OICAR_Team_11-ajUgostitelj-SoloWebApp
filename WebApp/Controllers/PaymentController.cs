@@ -44,7 +44,7 @@ namespace WebApp.Controllers
                 {
                     OrderDate = DateTime.UtcNow,
                     TableId = 2,
-                    Status = "Paid",
+                    Status = (int)OrderStatus.Paid,
                     TotalAmount = cart.Sum(x => x.Price * x.Quantity)
                 };
 

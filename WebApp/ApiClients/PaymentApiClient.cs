@@ -31,14 +31,26 @@ namespace WebApp.ApiClients
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("payment/create", payment);
-                response.EnsureSuccessStatusCode();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogError("Error creating payment: {ErrorContent}", errorContent);
+                    throw new HttpRequestException($"Request failed with status code {response.StatusCode}. Error: {errorContent}");
+                }
                 return await response.Content.ReadFromJsonAsync<PaymentDto>();
+            }
+            catch (HttpRequestException httpEx)
+            {
+                _logger.LogError(httpEx, "HTTP error occurred while creating payment.");
+                throw;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to create payment with API client.");
+                _logger.LogError(ex, "Unexpected error occurred while creating payment with API client.");
                 throw;
             }
         }
+
     }
 }
