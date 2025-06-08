@@ -32,6 +32,11 @@ builder.Services.AddHttpClient<ReviewApiClient>(client =>
     client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 });
 
+builder.Services.AddHttpClient<TablesApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
+});
+
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

@@ -1,4 +1,5 @@
-﻿﻿@{
+﻿@model WebApp.ViewModels.PaymentFormViewModel﻿
+@{
     ViewData["Title"] = "Confirm Payment";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -8,7 +9,8 @@
 <div class="container-cart">
     <h1 class="cart-title">Confirm Payment</h1>
 
-    <form method="post" asp-controller="Payment" asp-action="Process" class="checkout-form" style="max-width:600px;margin:auto;">
+    <form method="post" asp-controller="Payment" asp-action="Process" class="checkout-form" style="max-width:600px;margin:auto
+          @Html.AntiForgeryToken()
         <div style="margin-bottom:20px;">
             <label for="paymentMethod" style="font-weight:bold;color:var(--primary-color);">Payment Method</label>
             <select name="method" id="paymentMethod">
@@ -27,7 +29,8 @@
                 <label style="font-weight:bold;color:var(--primary-color);">Card Number</label>
                 <input name="CardNumber" class="quantity-input" style="width:100%;" />
             </div>
-
+            <input type="hidden" asp-for="TableId" />
+            <input type="hidden" asp-for="TotalAmount" />
             <div style="display:flex;gap:20px;margin-bottom:20px;">
                 <div style="flex:1;">
                     <label style="font-weight:bold;color:var(--primary-color);">Expiration (MM/YY)</label>
@@ -40,7 +43,7 @@
             </div>
         </div>
 
-        <a href="/Payment/Process">Pay now!</a>
+        <button type="submit" class="submit-btn">Pay now!</button>
         </br>
         <a href="@Url.Action("Index", "Cart")" class="continue-shopping">Back to Cart</a>
     </form>
