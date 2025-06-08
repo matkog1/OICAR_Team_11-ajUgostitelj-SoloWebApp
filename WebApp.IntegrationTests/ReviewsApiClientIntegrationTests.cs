@@ -2,41 +2,45 @@
 using WebApp.DTOs;
 using Xunit;
 
-public class ReviewApiClientIntegrationTests : IntegrationTestBase
+namespace WebApp.IntegrationTests
 {
-    private readonly ReviewApiClient _client;
-
-    public ReviewApiClientIntegrationTests()
+    public class ReviewApiClientIntegrationTests : IntegrationTestBase
     {
-        _client = new ReviewApiClient(HttpClient, Logger);
-    }
+        private readonly ReviewApiClient _client;
 
-    [Fact]
-    public async Task LoadReviewsAsync_ReturnsSomeReviews()
-    {
-        var reviews = await _client.LoadReviewsAsync();
-
-        Assert.NotNull(reviews);
-        Assert.True(reviews.Count > 0);
-    }
-
-    [Fact]
-    public async Task CreateReviewAsync_CreatesSuccessfully()
-    {
-        var review = new ReviewDTO
+        public ReviewApiClientIntegrationTests()
         {
-            ProductId = 19,
-            ProductName = "Espresso",
-            Rating = 5,
-            Comment = "Excellent!",
-            ReviewerName = "IntegrationTest",
-            ReviewDate = DateTime.UtcNow
-        };
+            _client = new ReviewApiClient(HttpClient, Logger);
+        }
 
-        var created = await _client.CreateReviewAsync(review);
+        [Fact]
+        public async Task LoadReviewsAsync_ReturnsSomeReviews()
+        {
+            var reviews = await _client.LoadReviewsAsync();
 
-        Assert.NotNull(created);
-        Assert.True(created.Id > 0);
-        Assert.Equal("Espresso", created.ProductName);
+            Assert.NotNull(reviews);
+            Assert.True(reviews.Count > 0);
+        }
+
+        [Fact]
+        public async Task CreateReviewAsync()
+        {
+            var review = new ReviewDTO
+            {
+                ProductId = 19,
+                ProductName = "Espresso",
+                Rating = 5,
+                Comment = "Excellent!",
+                ReviewerName = "IntegrationTest",
+                ReviewDate = DateTime.UtcNow
+            };
+
+            var created = await _client.CreateReviewAsync(review);
+
+            Assert.NotNull(created);
+            Assert.True(created.Id > 0);
+            Assert.Equal("Espresso", created.ProductName);
+        }
     }
+
 }

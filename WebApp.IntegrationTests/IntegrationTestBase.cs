@@ -2,18 +2,22 @@
 using Microsoft.Extensions.Logging;
 using WebApp.ApiClients;
 
-public abstract class IntegrationTestBase
+namespace WebApp.IntegrationTests
 {
-    protected readonly HttpClient HttpClient;
-    protected readonly ILogger<CategoriesApiClient> Logger;
-
-    protected IntegrationTestBase()
+    public abstract class IntegrationTestBase
     {
-        HttpClient = new HttpClient
-        {
-            BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/") // 
-        };
+        protected readonly HttpClient HttpClient;
+        protected readonly ILogger<CategoriesApiClient> Logger;
 
-        Logger = new LoggerFactory().CreateLogger<CategoriesApiClient>();
+        protected IntegrationTestBase()
+        {
+            HttpClient = new HttpClient
+            {
+                BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/") // 
+            };
+
+            Logger = new LoggerFactory().CreateLogger<CategoriesApiClient>();
+        }
     }
+
 }
