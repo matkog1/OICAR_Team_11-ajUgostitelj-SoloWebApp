@@ -30,7 +30,7 @@ namespace WebApp.IntegrationTests
 
 
         [Fact]
-        public async Task CreatePaymentAsync_CreatesPaymentSuccessfully()
+        public async Task CreatePaymentAsync()
         {
             //prvo moramo napraviti order i vezati ga za payment, zbog orderId koji moze ici na samo jedan payment
             var createOrder = new OrderDto
