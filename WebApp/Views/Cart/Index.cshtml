@@ -1,4 +1,4 @@
-﻿@model List<WebApp.ViewModels.ProductCartViewModel>
+﻿@model WebApp.ViewModels.CartIndexViewModel
 @{
     ViewData["Title"] = "Your Shopping Cart";
 }
@@ -191,7 +191,7 @@ body {
 <div class="container-cart">
     <h1 class="cart-title">Your Shopping Cart</h1>
     <div class="cart-items">
-        @if (!Model.Any())
+        @if (!Model.Items.Any())
         {
             <p>Your cart is empty.</p>
             <a href="@Url.Action("Index", "Product")" class="continue-shopping">Continue Shopping</a>
@@ -199,7 +199,7 @@ body {
         else
         {
             decimal total = 0;
-            foreach (var item in Model)
+            foreach (var item in Model.Items)
             {
                 var subtotal = item.Price * item.Quantity;
                 total += subtotal;
@@ -227,9 +227,11 @@ body {
             }
             <div class="cart-summary">
                 <div class="total-price">Total: @total.ToString("F2") €</div>
-                <form action="/Payment/Checkout" method="get">
-                    <button type="submit" class="checkout-btn">Proceed to Checkout</button>
-                </form>
+                <a href="/Payment/Process?tableId=@Model.SelectedTableId"
+                   class="checkout-btn">
+                    Proceed to Payment
+                </a>
+                <br>
                 <a href="@Url.Action("Index", "Product")" class="continue-shopping">Continue Shopping</a>
             </div>
         }
@@ -237,73 +239,17 @@ body {
 </div>
 @section Scripts {
     <script>
-        function updateQty(btn, delta) {
+        document.addEventListener("DOMContentLoaded", () => {
             const wrapper = btn.closest(".cart-item");
-            if (!wrapper) return;
-            const input = wrapper.querySelector(".qty-input");
-            if (!input) return;
-            let qty = parseInt(input.value);
-            if (isNaN(qty)) qty = 1;
-            qty += delta;
-            if (qty < 1) qty = 1;
-            input.value = qty;
-            recalc(wrapper);
-        }
-
-        function manualQtyChange(input) {
-            const wrapper = input.closest(".cart-item");
-            if (!wrapper) return;
-            let qty = parseInt(input.value);
-            if (isNaN(qty) || qty < 1) qty = 1;
-            input.value = qty;
-            recalc(wrapper);
-        }
-
-        function recalc(itemRow) {
-            try {
-                if (!itemRow) {
-                    console.error("itemRow is null. Check your DOM structure or selector.");
-                    return;
-                }
-                const priceElement = itemRow.querySelector(".item-price");
-                const subtotalElement = itemRow.querySelector(".subtotal");
-                const qtyInput = itemRow.querySelector(".qty-input");
-
-                if (!priceElement || !subtotalElement || !qtyInput) {
-                    console.error("Missing elements for recalculation.");
-                    return;
-                }
-
-                const priceText = priceElement.dataset.price;
-                const price = parseFloat(priceText.replace(',', '.'));
-                const qty = parseInt(qtyInput.value);
-
-                if (!isNaN(price) && !isNaN(qty)) {
-                    const subtotal = price * qty;
-                    subtotalElement.textContent = subtotal.toFixed(2);
-                }
-
-                let total = 0;
-                document.querySelectorAll(".cart-item").forEach(item => {
-                    const priceEl = item.querySelector(".item-price");
-                    const inputEl = item.querySelector(".qty-input");
-                    if (!priceEl || !inputEl) return;
-                    const price = parseFloat(priceEl.dataset.price.replace(',', '.'));
-                    const qty = parseInt(inputEl.value);
-                    if (!isNaN(price) && !isNaN(qty)) {
-                        total += price * qty;
-                    }
-                });
-
-                const totalEl = document.getElementById("total-price");
-                if (totalEl) {
-                    totalEl.textContent = total.toFixed(2);
-                } else {
-                    console.error("Total element not found.");
-                }
-            } catch (err) {
-                console.error("recalc error:", err);
-            }
-        }
+          const table = localStorage.getItem("selectedTableId");
+          if (!table) {
+            link.addEventListener("click", e => {
+              e.preventDefault();
+              alert("Please choose a table first!");
+            });
+          } else {
+            link.href = `/Payment/Process?tableId=${table}`;
+          }
+        });
     </script>
 }

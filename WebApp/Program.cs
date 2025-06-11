@@ -1,5 +1,8 @@
- using System.Net.Http.Headers;
+using Stripe;
+using System.Net.Http.Headers;
 using WebApp.ApiClients;
+using PayPalCheckoutSdk.Core;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +40,9 @@ builder.Services.AddHttpClient<TablesApiClient>(client =>
     client.BaseAddress = new Uri("https://oicar-team-11-ajugostitelj-11.onrender.com/api/");
 });
 
-
+builder.Services.AddSingleton<PayPalHttpClient>(_ =>
+    PayPalClient.Client()
+);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -66,7 +71,6 @@ builder.Services.AddCors(options =>
                .AllowAnyMethod();
     });
 });
-
 
 var app = builder.Build();
 

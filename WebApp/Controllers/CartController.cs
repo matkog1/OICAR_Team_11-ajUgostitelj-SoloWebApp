@@ -14,8 +14,14 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var cart = GetCartFromSession();
-            return View(cart);
+            var cart = GetCartFromSession(); 
+            var selectedTableId = HttpContext.Session.GetInt32("SelectedTableId") ?? 2;
+            var vm = new CartIndexViewModel
+            {
+                Items = cart,
+                SelectedTableId = selectedTableId
+            };
+            return View(vm);
         }
 
         [HttpPost]
@@ -31,14 +37,14 @@ namespace WebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Checkout([FromBody] List<ProductCartViewModel> items)
+        public IActionResult Checkout([FromBody] List<ProductCartViewModel> items)
         {
             if (items == null || !items.Any())
                 return BadRequest("Cart is empty.");
 
             SaveCartToSession(items);
 
-            return Json(new { redirectUrl = Url.Action("Checkout", "Payment") });
+            return Json(new { redirectUrl = Url.Action("Process", "Payment") });
         }
 
 
