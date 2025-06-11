@@ -14,15 +14,16 @@ namespace WebApp.Controllers
         private readonly ProductApiClient _productApiClient;
         private readonly CategoriesApiClient _categoriesApiClient;
         private readonly ReviewApiClient _reviewApiClient;
+        private readonly TablesApiClient _tablesApiClient;
         private readonly ILogger<CategoriesController> _logger;
         private const string CART_SESSION_KEY = "Cart";
 
-
-        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, ReviewApiClient reviewApiClient, ILogger<CategoriesController> logger)
+        public ProductController(ProductApiClient productApiClient, CategoriesApiClient categoriesApiClient, ReviewApiClient reviewApiClient, TablesApiClient tablesApiClient, ILogger<CategoriesController> logger)
         {
             _productApiClient = productApiClient;
             _categoriesApiClient = categoriesApiClient;
             _reviewApiClient = reviewApiClient;
+            _tablesApiClient = tablesApiClient;
             _logger = logger;
         }
 
@@ -33,18 +34,20 @@ namespace WebApp.Controllers
                 var products = await _productApiClient.LoadProductsAsync();
                 var categories = await _categoriesApiClient.LoadCategoriesAsync();
                 var reviews = await _reviewApiClient.LoadReviewsAsync();
+                var tables = await _tablesApiClient.LoadTablesAsync();
 
                 if (!string.IsNullOrWhiteSpace(category))
                 {
                     products = products.Where(p => categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name == category).ToList();
                 }
 
+                var avgByProduct = reviews.GroupBy(r => r.ProductId).ToDictionary(g => g.Key,g => (double?)g.Average(r => r.Rating));
+
+
                 var productViewModels = new List<ProductViewModel>();
 
                 foreach (var product in products)
                 {
-                    var productReview = await _reviewApiClient.LoadReviewsByProductId(product.Id);
-                    double? averageRating = productReview.Any() ? productReview.Average(r => r.Rating) : null;
 
                     productViewModels.Add(new ProductViewModel
                     {
@@ -52,8 +55,8 @@ namespace WebApp.Controllers
                         Name = product.Name,
                         Description = product.Description,
                         Price = product.Price,
-                        CategoryName = categories.FirstOrDefault(c => c.Id == product.CategoryId)?.Name ?? "Nema kategoriju",
-                        AverageRating = averageRating
+                        CategoryName = categories.First(c => c.Id == product.CategoryId).Name,
+                        AverageRating = avgByProduct.GetValueOrDefault(product.Id)
                     });
 
                 }
@@ -61,7 +64,8 @@ namespace WebApp.Controllers
                 var vm = new ProductIndexViewModel
                 {
                     Products = productViewModels,
-                    Categories = categories.Select(c => c.Name).Distinct().ToList()
+                    Categories = categories.Select(c => c.Name).Distinct().ToList(),
+                    Tables = tables
                 };
 
                 return View(vm);
