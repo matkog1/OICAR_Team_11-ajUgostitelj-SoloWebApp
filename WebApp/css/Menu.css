@@ -169,3 +169,69 @@
         background-color: #5a3b2b;
         transform: translateY(-2px);
     }
+@media (max-width: 768px) {
+    .menu-items {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-categories {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .category-btn {
+        width: 90%;
+        margin-bottom: 10px;
+        font-size: 1rem;
+        padding: 12px 0;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .menu-item {
+        max-width: 95%;
+        margin: 0 auto;
+    }
+
+    .item-image {
+        height: 160px;
+    }
+
+    .item-name {
+        font-size: 1.1rem;
+    }
+
+    .item-description {
+        font-size: 0.85rem;
+    }
+
+    .item-price {
+        font-size: 1rem;
+    }
+
+    .order-btn {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+
+        .section-title:after {
+            width: 60px;
+        }
+}
+
