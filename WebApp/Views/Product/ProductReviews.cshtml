@@ -1,6 +1,7 @@
 ﻿@model WebApp.ViewModels.ProductReviewsViewModel
 @{
     ViewData["Title"] = "Product Reviews";
+    ViewData["HideFooter"] = true;
 }
 
 <style>
@@ -16,16 +17,6 @@
     * {
         box-sizing: border-box;
     }
-
-/* Reset */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    color: var(--text-color);
-    line-height: 1.6;
-}
 
 /* Container */
     form.review-form, ul.reviews-list {
@@ -178,6 +169,12 @@ p {
             color: var(--primary-color);
             transform: scale(1.1);
         }
+
+
+    .review-form,
+    .reviews-list {
+        padding-bottom: 140px; 
+    }
 
 
 /* Responsive */

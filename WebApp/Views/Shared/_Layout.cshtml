@@ -42,14 +42,13 @@
     </header>
 
     
-
-    <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
-    </div>
-    <footer class="bg-coffee text-light py-4 mt-5 footer">
-        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
+    @if (!ViewData.ContainsKey("HideFooter") || !(bool)ViewData["HideFooter"])
+    {
+        <footer class="footer bg-coffee text-light mt-3">
+            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
             <div class="mb-3 mb-md-0">
                 <p class="mb-0">&copy; 2025 ajUgostitelj. Sva prava pridržana.</p>
             </div>
@@ -60,7 +59,7 @@
             </div>
         </div>
     </footer>
-
+    }
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
