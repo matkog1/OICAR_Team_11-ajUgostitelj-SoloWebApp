@@ -198,3 +198,24 @@ body {
             width: 60px;
         }
 }
+@media (max-width: 768px) {
+    .menu-item {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-width: 95%;
+        margin: 0 auto;
+    }
+
+    .menu-items {
+        align-items: stretch;
+    }
+
+    .item-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+}
+

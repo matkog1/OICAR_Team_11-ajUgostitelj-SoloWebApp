@@ -166,3 +166,27 @@ main {
             right: 0 !important;
         }
 }
+@media (max-width: 767.98px) {
+    .footer {
+        flex-direction: column !important;
+        text-align: center;
+        padding: 0.75rem 1rem !important;
+        gap: 0.5rem;
+    }
+
+        .footer .container {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 0.75rem;
+        }
+
+        .footer .footer-links {
+            flex-direction: column !important;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+    .footer-links a {
+        font-size: 0.95rem;
+    }
+}
