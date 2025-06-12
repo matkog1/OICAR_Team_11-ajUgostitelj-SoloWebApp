@@ -127,8 +127,11 @@ main {
             right: 0 !important;
         }
 }
+
 .footer {
     line-height: 1.6;
+    padding: 0.5rem 0; 
+    font-size: 0.9rem;
 }
 
     .footer a:hover {
