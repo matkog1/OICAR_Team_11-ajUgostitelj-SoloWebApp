@@ -64,7 +64,9 @@ body {
         background-color: var(--secondary-color);
         margin: 10px auto;
     }
-
+.page-content {
+    padding-bottom: 140px; 
+}
 .menu-items {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
