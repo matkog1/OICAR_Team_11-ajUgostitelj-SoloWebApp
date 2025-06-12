@@ -31,5 +31,7 @@ namespace WebApp.ViewModels
         public List<ProductViewModel> Products { get; set; } = new();
         public List<string> Categories { get; set; } = new();
         public List<TableDto> Tables { get; set; } = new();
+
+        public  int  SelectedTableId { get; set; }
     }
 }

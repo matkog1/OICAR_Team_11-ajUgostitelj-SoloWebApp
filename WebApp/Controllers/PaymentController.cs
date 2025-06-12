@@ -106,10 +106,13 @@ namespace WebApp.Controllers
             }
         }
 
-        public IActionResult Success(int id, string orderStatus, int table)
+        public IActionResult Success(int id, int orderStatus, int table)
         {
+            var statusEnum = (OrderStatus)orderStatus;
+            var statusName = statusEnum.ToString();
+
             ViewBag.OrderId = id;
-            ViewBag.OrderStatus = orderStatus;
+            ViewBag.OrderStatus = statusName;
             ViewBag.TableNumber = table;
             return View("Success");
         }
