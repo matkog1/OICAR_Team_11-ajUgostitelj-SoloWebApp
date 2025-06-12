@@ -36,7 +36,7 @@ public class OrderApiClientTests
         var order = new OrderDto
         {
             Id = 1,
-            Status = (int)OrderStatus.Paid,
+            Status = (int)WebApp.OrderStatus.Paid,
             TotalAmount = 45.50m,
             TableId = 3
         };
@@ -53,7 +53,7 @@ public class OrderApiClientTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result?.Id);
-        Assert.Equal((int)OrderStatus.Paid, result?.Status);
+        Assert.Equal((int)WebApp.OrderStatus.Paid, result?.Status);
         Assert.Equal(45.50m, result?.TotalAmount);
         Assert.Equal(3, result?.TableId);
     }
@@ -90,7 +90,7 @@ public class OrderApiClientTests
         var newOrder = new OrderDto
         {
             OrderDate = DateTime.UtcNow,
-            Status = (int)OrderStatus.Paid,
+            Status = (int)WebApp.OrderStatus.Paid,
             TotalAmount = 22.99m,
             TableId = 1
         };
@@ -99,7 +99,7 @@ public class OrderApiClientTests
         {
             Id = 10,
             OrderDate = newOrder.OrderDate,
-            Status = (int)OrderStatus.Paid,
+            Status = (int)WebApp.OrderStatus.Paid,
             TotalAmount = 22.99m,
             TableId = 1
         };
@@ -116,7 +116,7 @@ public class OrderApiClientTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(10, result?.Id);
-        Assert.Equal((int)OrderStatus.Paid, result?.Status);
+        Assert.Equal((int)WebApp.OrderStatus.Paid, result?.Status);
         Assert.Equal(22.99m, result?.TotalAmount);
         Assert.Equal(1, result?.TableId);
     }

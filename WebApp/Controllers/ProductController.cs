@@ -36,6 +36,14 @@ namespace WebApp.Controllers
                 var reviews = await _reviewApiClient.LoadReviewsAsync();
                 var tables = await _tablesApiClient.LoadTablesAsync();
 
+                if (Request.Query.ContainsKey("table")
+                   && int.TryParse(Request.Query["table"], out var t))
+                {
+                    HttpContext.Session.SetInt32("SelectedTableId", t);
+                }
+
+                var selectedTable = HttpContext.Session.GetInt32("SelectedTableId") ?? 1;
+                
                 if (!string.IsNullOrWhiteSpace(category))
                 {
                     products = products.Where(p => categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name == category).ToList();
@@ -65,7 +73,7 @@ namespace WebApp.Controllers
                 {
                     Products = productViewModels,
                     Categories = categories.Select(c => c.Name).Distinct().ToList(),
-                    Tables = tables
+                    SelectedTableId = selectedTable
                 };
 
                 return View(vm);

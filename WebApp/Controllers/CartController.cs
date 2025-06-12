@@ -14,8 +14,13 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            if (Request.Query.TryGetValue("table", out var tbl)
+                && int.TryParse(tbl, out var t))
+            {
+                HttpContext.Session.SetInt32("SelectedTableId", t);
+            }
             var cart = GetCartFromSession(); 
-            var selectedTableId = HttpContext.Session.GetInt32("SelectedTableId") ?? 2;
+            var selectedTableId = HttpContext.Session.GetInt32("SelectedTableId") ?? 1;
             var vm = new CartIndexViewModel
             {
                 Items = cart,
