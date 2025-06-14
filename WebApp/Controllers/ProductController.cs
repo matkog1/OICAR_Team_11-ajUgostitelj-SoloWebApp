@@ -111,6 +111,7 @@ namespace WebApp.Controllers
                     Price = product.Price,
                     CategoryName = category?.Name ?? "Nema kategoriju",
                     Reviews = reviews,
+                    ImageUrl = product.ImageUrl,
                     AverageRating = reviews.Any() ? reviews.Average(r => r.Rating) : null,
                     LastReviewDate = reviews.Any() ? reviews.Max(r => r.ReviewDate) : null
                 };

@@ -211,11 +211,8 @@ body {
                         <form action="/Cart/UpdateQuantity" method="post" class="qty-form">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@item.Id" />
-
                             <div class="qty-control">
-                                <button type="button" class="qty-btn" data-delta="-1">–</button>
                                 <input type="number" name="quantity" class="qty-input" value="@item.Quantity" min="1" onchange="this.form.submit()" />
-                                <button type="button" class="qty-btn" data-delta="1">+</button>
                             </div>
                         </form>
 
