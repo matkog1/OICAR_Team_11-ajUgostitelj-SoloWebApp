@@ -29,7 +29,8 @@
                          data-name="@item.Name"
                          data-price="@item.Price"
                          data-image="@item.ImageUrl">
-                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? Url.Content("~/Img/default-food.jpeg") : Url.Content(item.ImageUrl))"
+                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? Url.Content("~/img/default-food.jpeg"):(item.ImageUrl.StartsWith("https")? item.ImageUrl
+                             :Url.Content(item.ImageUrl)))"
                              alt="@item.Name" class="item-image" />
                         <div class="item-details">
                             <div class="item-name">@item.Name</div>

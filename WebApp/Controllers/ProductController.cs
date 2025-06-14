@@ -63,6 +63,7 @@ namespace WebApp.Controllers
                         Name = product.Name,
                         Description = product.Description,
                         Price = product.Price,
+                        ImageUrl = product.ImageUrl,
                         CategoryName = categories.First(c => c.Id == product.CategoryId).Name,
                         AverageRating = avgByProduct.GetValueOrDefault(product.Id)
                     });
