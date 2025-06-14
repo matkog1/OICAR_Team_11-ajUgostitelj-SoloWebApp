@@ -73,5 +73,18 @@ namespace WebApp.Controllers
             HttpContext.Session.SetString(CART_SESSION_KEY, json);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateQuantity(int id, int quantity)
+        {
+            var cart = GetCartFromSession();
+            var item = cart.FirstOrDefault(x => x.Id == id);
+            if (item != null && quantity > 0)
+            {
+                item.Quantity = quantity;
+                SaveCartToSession(cart);
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
