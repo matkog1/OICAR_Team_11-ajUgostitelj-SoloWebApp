@@ -56,10 +56,10 @@ namespace WebApp.IntegrationTests
             {
                 Name = name,
                 Description = name,
-                Price = 99,
+                Price = 4,
                 CategoryId = 19,
-                ImageUrl = "integracijskiTest.png",
-                Quantity = 99
+                ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz3Vs9u2q5J8yNPKfphr-xKDPuNjiCUTKKGoGKhGMW8qoGGIBVmk6zviXMmZY3m1aTGUY&usqp=CAU",
+                Quantity = 10
             };
 
             // act
@@ -83,10 +83,10 @@ namespace WebApp.IntegrationTests
                 {
                     Name = name,
                     Description = name,
-                    Price = 99,
+                    Price = 4,
                     CategoryId = 19,
-                    ImageUrl = "integracijskiTest.png",
-                    Quantity = 99
+                    ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz3Vs9u2q5J8yNPKfphr-xKDPuNjiCUTKKGoGKhGMW8qoGGIBVmk6zviXMmZY3m1aTGUY&usqp=CAU",
+                    Quantity = 10
                 });
             Assert.NotNull(created);
 
@@ -99,10 +99,10 @@ namespace WebApp.IntegrationTests
                     {
                         Name = name,
                         Description = name,
-                        Price = 99,
+                        Price = 4,
                         CategoryId = 19,
-                        ImageUrl = "integracijskiTest.png",
-                        Quantity = 99
+                        ImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQz3Vs9u2q5J8yNPKfphr-xKDPuNjiCUTKKGoGKhGMW8qoGGIBVmk6zviXMmZY3m1aTGUY&usqp=CAU",
+                        Quantity = 10
                     });
                     Assert.NotNull(created);
                 }
@@ -127,9 +127,18 @@ namespace WebApp.IntegrationTests
                 try
                 {
                     var newName = name + " update test products";
-                    created.Name = newName;
+                    var updatedProduct = new ProductDto
+                    {
+                        Id = created.Id,
+                        Name = newName,
+                        Description = created.Description,
+                        Price = created.Price,
+                        Quantity = created.Quantity,
+                        CategoryId = created.CategoryId,
+                        ImageUrl = created.ImageUrl
+                    };
 
-                    var ok = await _client.UpdateProductAsync(created);
+                    var ok = await _client.UpdateProductAsync(updatedProduct);
                     Assert.True(ok);
 
                     var fetched2 = await _client.LoadProductAsync(created.Id);
