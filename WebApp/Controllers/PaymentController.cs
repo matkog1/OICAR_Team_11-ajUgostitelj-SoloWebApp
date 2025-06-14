@@ -5,6 +5,7 @@ using WebApp.DTOs;
 using System.Text.Json;
 using PayPalCheckoutSdk.Core;
 using PayPalCheckoutSdk.Orders;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApp.Controllers
 {
@@ -203,7 +204,7 @@ namespace WebApp.Controllers
             };
             await _paymentApiClient.CreatePaymentAsync(paymentDto);
 
-
+            HttpContext.Session.SetInt32("LastOrderId", createdOrder.Id);
             HttpContext.Session.Remove(CART_SESSION_KEY);
             return RedirectToAction("Success", new
             {

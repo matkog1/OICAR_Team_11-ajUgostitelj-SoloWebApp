@@ -205,21 +205,27 @@ body {
                 total += subtotal;
                 <div class="cart-item">
                     <div class="item-info">
-                        <div>
-                            <div class="item-name">@item.Name</div>
-                            <div class="item-price-wrapper">
-                                <span class="item-price" data-price="@item.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
-                                </span> 
-                            </div>
+                        <div class="item-name">@item.Name</div>
+                        <div class="item-price">Price: @item.Price €</div>
+
+                        <form action="/Cart/UpdateQuantity" method="post" class="qty-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+
                             <div class="qty-control">
-                                <button type="button" class="qty-btn">–</button> @*onclick="updateQty(this, -1)" treba obo popraviti*@
-                                <input type="number" class="qty-input" value="@item.Quantity" min="1" onchange="manualQtyChange(this)" />
-                                <button type="button" class="qty-btn">+</button>@*onclick="updateQty(this, 1)" treba ovo popraviti*@
+                                <button type="button" class="qty-btn" data-delta="-1">–</button>
+                                <input type="number" name="quantity" class="qty-input" value="@item.Quantity" min="1" onchange="this.form.submit()" />
+                                <button type="button" class="qty-btn" data-delta="1">+</button>
                             </div>
-                            <div class="item-subtotal">Cijena: @subtotal.ToString("F2") €</div>
+                        </form>
+
+                        <div class="item-subtotal">
+                            Subtotal: @(item.Price * item.Quantity) €
                         </div>
                     </div>
+
                     <form action="/Cart/Remove" method="post">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@item.Id" />
                         <button type="submit" class="remove-btn">&times;</button>
                     </form>
@@ -250,6 +256,19 @@ body {
           } else {
             link.href = `/Payment/Process?tableId=${table}`;
           }
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const form = btn.closest('form.qty-form');
+                const input = form.querySelector('input[name="quantity"]');
+                const delta = parseInt(btn.dataset.delta, 10) || 0;
+                let qty = parseInt(input.value, 10) + delta;
+                if (qty < 1) qty = 1;
+                input.value = qty;
+                form.submit();
+            });
         });
     </script>
 }
